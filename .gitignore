@@ -113,5 +113,8 @@ ENV/
 ### Vagrant ###
 .vagrant/
 
-#Pycharm
+#### Pycharm ###
 .idea
+
+### Ansible ###
+*.retry

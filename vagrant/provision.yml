@@ -1,0 +1,40 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Deploy new sources.list
+      template:
+        src: sources.list.j2
+        dest: /etc/apt/sources.list
+      notify:
+        - update apt
+
+    - name: flush handlers
+      meta: flush_handlers
+
+    - name: upgrade system packages
+      apt:
+        upgrade: dist
+        cache_valid_time: 86400
+
+    - name: install required apt packages
+      apt:
+        state: present
+        name: "{{ item }}"
+        cache_valid_time: 86400
+      with_items:
+        - python3-pip
+        - python3-dev
+        - libssl-dev
+
+    - name: install required python packages
+      pip:
+        requirements: "{{ item }}"
+        executable: pip3
+      with_items:
+        - /vagrant/requirements.txt
+  handlers:
+    - name: update apt
+      apt:
+        update_cache: true
+
