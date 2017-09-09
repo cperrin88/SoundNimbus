@@ -1,40 +1,50 @@
 from django.contrib.auth.models import AbstractUser
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext as _
+from guardian.mixins import GuardianUserMixin
+
+from profiles.validators import MimetypeValidator
 
 
-class SNUser(AbstractUser):
-    pass
+class SNUser(AbstractUser, GuardianUserMixin):
+    profile_pic = models.FileField(upload_to='profiles/pictures',
+                                   validators=(
+                                       MimetypeValidator(
+                                           ('image/jpeg', 'image/png')
+                                       ),
+                                   ))
 
 
 class SNGroup(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)
-    members = models.ManyToManyField("SNUser")
+    profile_pic = models.FileField(upload_to='profiles/pictures',
+                                   validators=(
+                                       MimetypeValidator(
+                                           ('image/jpeg', 'image/png')
+                                       ),
+                                   ))
 
-
-class Follower(models.Model):
-    follower_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,
-                                      related_name="follower_type")
-    follower_id = models.PositiveIntegerField()
-    follower = GenericForeignKey('follower_type', 'follower_id')
-    followed_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,
-                                      related_name="followed_type")
-    followed_id = models.PositiveIntegerField()
-    followed = GenericForeignKey('followed_type', 'followed_id')
+    class Meta:
+        permissions = (
+            ('member', _('Member')),
+            ('editor', _('Editor')),
+            ('admin', _('Administrator'))
+        )
 
 
 class Post(models.Model):
     FILE_TYPES = (
-        (0, _("Video")),
-        (1, _("Audio")),
-        (2, _("Picture"))
+        (0, _('Video')),
+        (1, _('Audio')),
+        (2, _('Picture'))
     )
 
-    author_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    author_id = models.PositiveIntegerField()
-    author = GenericForeignKey('author_type', 'author_id')
     message = models.TextField()
-    file = models.FileField()
+    posttime = models.DateTimeField(auto_now_add=True)
+    edittime = models.DateTimeField(default=None, null=True, blank=True)
+    file = models.FileField(upload_to='posts/files')
     file_type = models.PositiveSmallIntegerField(choices=FILE_TYPES)
+
+    def save(self, *args, **kwargs):
+        pass
+        #self.file_type = file.
