@@ -3,3 +3,4 @@ python-magic
 django-activity-stream
 django-jsonfield
 django-guardian
+Pillow
