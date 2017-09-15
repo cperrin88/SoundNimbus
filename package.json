@@ -1,0 +1,21 @@
+{
+  "name": "soundnimbus",
+  "version": "0.0.1",
+  "dependencies": {
+    "vue": "^2.4.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cperrin88/SoundNimbus.git"
+  },
+  "author": "",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/cperrin88/SoundNimbus/issues"
+  },
+  "homepage": "https://github.com/cperrin88/SoundNimbus#readme"
+}

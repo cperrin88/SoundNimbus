@@ -13,7 +13,7 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(UserProfileView, self).get_context_data(**kwargs)
-        context['user_stream'] = user_stream(request.user, with_user_activity=True)
+        context['user_stream'] = user_stream(self.request.user, with_user_activity=True).filter(verb="posted")
         context['post_form'] = PostForm()
         return context
 
@@ -22,8 +22,8 @@ class PostView(LoginRequiredMixin, View):
     http_method_names = ['post']
 
     def post(self, request):
-        post = PostForm(request.POST)
+        post = PostForm(request.POST, request.FILES)
         if post.is_valid():
-            mod = post.save()
-            action.send(request.user, verb='posted', action_object=mod)
+            post_model = post.save()
+            action.send(request.user, verb='posted', action_object=post_model)
             return HttpResponseRedirect('/profiles')
