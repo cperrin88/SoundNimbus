@@ -1,10 +1,28 @@
-{% extends "main.html" %}
+{% extends "base.html" %}
 {% load i18n %}
-
+{% load humanize %}
+{% load bootstrap3 %}
 {% block content %}
-<form method="post" action="{% url "profiles:post" %}">
-{% csrf_token %}
-{{ post_form.as_p }}
-<input type="submit" value="{% trans "Submit" %}">
-</form>
+    <form method="post" action="{% url "profiles:post" %}" class="form" enctype='multipart/form-data'>
+        {% csrf_token %}
+        {{ post_form.as_p }}
+        {% buttons %}
+            <button class="btn btn-primary" type="submit">{% trans "Submit" %}</button>
+        {% endbuttons %}
+    </form>
+    {% for entry in user_stream %}
+        <div class="card">
+            {% if entry.action_object.file_type == 2 %}
+                <img class="card-img-top" src="{{ entry.action_object.file.url }}">
+            {% endif %}
+            <div class="card-body">
+                <div class="card-title">{{ entry.actor.get_username }}</div>
+                <div class="card-text">{{ entry.action_object.message }}</div>
+                <div class="date"
+                     data-posttime="{{ entry.action_object.posttime|date:"c" }}">
+                    {{ entry.action_object.posttime|naturaltime }}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}

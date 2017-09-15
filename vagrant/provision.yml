@@ -2,6 +2,13 @@
 - hosts: all
   become: yes
   tasks:
+    - name: Add apt keys
+      apt_key:
+        url: "{{ item }}"
+        state: present
+      with_items:
+        - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+
     - name: Deploy new sources.list
       template:
         src: sources.list.j2
@@ -26,6 +33,7 @@
         - python3-pip
         - python3-dev
         - libssl-dev
+        - nodejs
 
     - name: install required python packages
       pip:
