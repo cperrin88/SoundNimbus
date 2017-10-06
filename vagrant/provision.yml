@@ -32,8 +32,10 @@
       with_items:
         - python3-pip
         - python3-dev
+        - python-psycopg2
         - libssl-dev
         - nodejs
+        - postgresql
 
     - name: install required python packages
       pip:
@@ -41,8 +43,46 @@
         executable: pip3
       with_items:
         - /vagrant/requirements.txt
+
+    - name: setup postgres user
+      become_user: postgres
+      postgresql_user:
+        db: django
+        name: djangouser
+        password: djangopass
+        priv: ALL
+        state: present
+
+    - name: setup postgres db
+      become_user: postgres
+      postgresql_db:
+        db: django
+        owner: djangouser
+        state: present
+
+    - name: Ensure PostgreSQL is listening on all localhost
+      lineinfile:
+        dest: /etc/postgresql/9.5/main/postgresql.conf
+        regexp: '^#?listen_addresses\s*='
+        line: "listen_addresses = '127.0.0.1'"
+        state: present
+      notify: restart postgresql
+
+    - name: Allow password connections from localhost
+      lineinfile:
+        dest: /etc/postgresql/9.5/main/pg_hba.conf
+        regexp: 'host\s+all\s+all\s+127.0.0.1/32\s+md5'
+        line: 'host all all 127.0.0.1/32 md5'
+        insertbefore: BOF
+      notify: restart postgresql
+
   handlers:
     - name: update apt
       apt:
         update_cache: true
+
+    - name: restart postgresql
+      service:
+        name: postgresql
+        state: restarted
 

@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^profiles/', include('profiles.urls')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
+    url(r'^actpub', include('activitypub.urls'))
 ]
 
 if settings.DEBUG:

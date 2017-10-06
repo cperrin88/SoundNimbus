@@ -4,4 +4,6 @@ django-activity-stream
 django-jsonfield
 django-guardian
 django-bootstrap3
+psycopg2
 Pillow
+PyLD

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class ActivitypubConfig(AppConfig):
+class ActivityPubConfig(AppConfig):
     name = 'activitypub'
